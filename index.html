@@ -61,6 +61,7 @@
   <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 
   <script>
+      var url = window.location.href;
         const styleOptions = {
 
            // Add styleOptions to customize Web Chat canvas
@@ -70,7 +71,22 @@
         // Add your BOT ID below 
         var BOT_ID = "867f64ba-df7f-4819-86cd-87aa46b64168"; 
         var theURL = "https://powerva.microsoft.com/api/botmanagement/v1/directline/directlinetoken?botId=" + BOT_ID;
-
+      
+ const store = WebChat.createStore({}, ({ dispatch }) => next => action => {
+     if (action.type === 'DIRECT_LINE/CONNECT_FULFILLED') {
+       dispatch({
+          type: "WEB_CHAT/SEND_EVENT",
+          payload: {
+            name: "pvaSetContext",
+            value: {
+               "UserName":   url.split("=")[1],
+            }
+          },
+        });
+      }
+        return next(action);
+    });
+      
       fetch(theURL)
             .then(response => response.json())
             .then(conversationInfo => {
